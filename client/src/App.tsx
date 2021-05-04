@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import io from "socket.io-client";
+import Router from "./navigation/Router";
 
 function App() {
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
@@ -12,7 +13,7 @@ function App() {
     });
   }, []);
 
-  return <h1>Hello</h1>;
+  return <Router />;
 }
 
 export default App;

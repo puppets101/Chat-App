@@ -1,18 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 
 function App() {
-  const socketRef = useRef();
+  const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
-    const socket = io("/");
+    socketRef.current = io.connect("/");
 
-    socket.on("connect", () => {
-      console.log("user is connected");
-    });
-
-    socket.on("user-connected", (data) => {
-      console.log(`User with ID '${data}' has connected`);
+    socketRef.current.on("connection", (data: string) => {
+      console.log(data);
     });
   }, []);
 

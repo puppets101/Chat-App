@@ -13,12 +13,6 @@ const io = require("socket.io")(server, {
   },
 });
 
-app.use(
-  createProxyMiddleware("/websocket", {
-    target: "http://localhost:4000",
-    ws: true,
-  })
-);
 app.use(express.static("client"));
 
 io.on("connection", (socket) => {

@@ -21,6 +21,7 @@ interface NetworkValues {
   disconnectFromRoom: () => void;
   sendMessage: () => void;
   setUsername: (username: string) => void;
+  createRoom: (roomName: string) => void;
 }
 
 export const NetworkContext = createContext<NetworkValues>({
@@ -29,7 +30,8 @@ export const NetworkContext = createContext<NetworkValues>({
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
-  setUsername: (username: string) => {},
+  setUsername: () => {},
+  createRoom: () => {},
 });
 
 const NetworkProvider: React.FC<Props> = ({ children }) => {
@@ -55,6 +57,9 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   const setUsername = (username: string) => {
     socket.emit("username", username);
   };
+  const createRoom = (roomName: string) => {
+    socket.emit("create", roomName);
+  };
 
   return (
     <NetworkContext.Provider
@@ -65,6 +70,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         disconnectFromRoom,
         sendMessage,
         setUsername,
+        createRoom,
       }}
     >
       {children}

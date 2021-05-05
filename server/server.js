@@ -14,11 +14,12 @@ const io = require("socket.io")(server, {
 });
 
 const users = [];
+const rooms = [];
 
 app.use(express.static("client"));
 
 io.on("connection", (socket) => {
-  console.log("Client was connected");
+  console.log("Client was connected", socket.id);
 
   socket.emit("users", users);
 
@@ -26,6 +27,11 @@ io.on("connection", (socket) => {
     socket.username = username;
     users.push(socket.username);
     console.log("user array on server: " + users);
+  });
+  socket.on("create", (roomName) => {
+    socket.join(roomName);
+    rooms.push(roomName);
+    console.log(socket.rooms);
   });
 });
 

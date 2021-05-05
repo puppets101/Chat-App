@@ -13,11 +13,20 @@ const io = require("socket.io")(server, {
   },
 });
 
+const users = [];
+
 app.use(express.static("client"));
 
 io.on("connection", (socket) => {
   console.log("Client was connected");
-  socket.emit("test", socket.id);
+
+  socket.emit("users", users);
+
+  socket.on("username", (username) => {
+    socket.username = username;
+    users.push(socket.username);
+    console.log("user array on server: " + users);
+  });
 });
 
 server.listen(PORT, () =>

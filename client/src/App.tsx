@@ -6,10 +6,16 @@ function App() {
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
-    socketRef.current = io.connect("/");
+    socketRef.current = io.connect("http://localhost:4000", {
+      transports: ["websocket"],
+    });
 
-    socketRef.current.on("connection", (data: string) => {
+    socketRef.current.on("connect", (data: string) => {
       console.log(data);
+    });
+
+    socketRef.current.on("test", (id: string) => {
+      console.log("Your ID is: " + id);
     });
   }, []);
 

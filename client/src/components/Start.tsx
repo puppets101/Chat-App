@@ -1,9 +1,13 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useContext } from "react";
 import Header from "./Header";
 import PageHeading from "./PageHeading";
 import { buttonStyle, inputStyle } from "../styles";
+import { NetworkContext } from "../context/NetworkContext";
 
 function Start() {
+  const networkContext = useContext(NetworkContext);
+  console.log(networkContext);
+
   return (
     <div style={root}>
       <Header title="Welcome to Chut App" />

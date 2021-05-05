@@ -1,14 +1,15 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import io from "socket.io-client";
 
 type Props = {
   children: React.ReactNode;
 };
 
-interface User {
+export interface User {
   username: string;
 }
 
-interface Room {
+export interface Room {
   members: User[];
   name: string;
 }
@@ -21,7 +22,7 @@ interface NetworkValues {
   sendMessage: () => void;
 }
 
-const NetworkContext = createContext<NetworkValues>({
+export const NetworkContext = createContext<NetworkValues>({
   users: [],
   rooms: [],
   connectToRoom: () => {},
@@ -32,6 +33,15 @@ const NetworkContext = createContext<NetworkValues>({
 const NetworkProvider: React.FC<Props> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const socket: SocketIOClient.Socket = io.connect("http://localhost:4000", {
+    transports: ["websocket"],
+  });
+
+  useEffect(() => {
+    socket.on("test", (id: string) => {
+      console.log("Your ID is: " + id);
+    });
+  }, []);
 
   const connectToRoom = () => {};
   const disconnectFromRoom = () => {};

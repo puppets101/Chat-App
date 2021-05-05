@@ -8,7 +8,7 @@ interface Props {
   loggedInText?: string;
 }
 
-function CreateRoom() {
+function CreateRoom(props: Props) {
   return (
     <div style={root}>
       <Header title="Lobby" />

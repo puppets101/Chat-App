@@ -10,6 +10,7 @@ export const buttonStyle: CSSProperties = {
   transition: "all 0.2s",
   fontSize: "1rem",
   border: "none",
+  cursor: "pointer",
 };
 
 export const inputStyle: CSSProperties = {

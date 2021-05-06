@@ -1,6 +1,7 @@
-import React, { CSSProperties } from "react";
+import React, { ChangeEvent, CSSProperties, useContext, useState } from "react";
 import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
+import { NetworkContext } from "../context/NetworkContext";
 
 interface Props {
   title: string;
@@ -9,16 +10,27 @@ interface Props {
 }
 
 function CreateRoom(props: Props) {
+  const networkContext = useContext(NetworkContext);
+  const [roomName, setRoomName] = useState("");
+
+  const handleCreateRoomInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setRoomName(e.target.value);
+  };
+
+  const handleCreateRoomClick = () => {
+    networkContext.createRoom(roomName);
+  };
+
   return (
     <div style={root}>
       <Header title="Lobby" />
       <PageHeading title="Create new room" />
       <div style={input}>
         <label htmlFor="name">Room name</label>
-        <input type="text" name="name" />
+        <input onChange={handleCreateRoomInput} type="text" name="name" />
         <label htmlFor="password">Password (optional)</label>
         <input type="text" name="password" />
-        <button>Create Room</button>
+        <button onClick={handleCreateRoomClick}>Create Room</button>
       </div>
     </div>
   );

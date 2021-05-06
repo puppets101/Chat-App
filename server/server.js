@@ -13,6 +13,7 @@ const io = require("socket.io")(server, {
   },
 });
 
+// DATA
 const users = [];
 const rooms = [];
 
@@ -21,18 +22,23 @@ app.use(express.static("client"));
 io.on("connection", (socket) => {
   console.log("Client was connected", socket.id);
 
-  socket.emit("users", users);
-
-  socket.on("username", (username) => {
+  socket.on("new user", (username) => {
     socket.username = username;
     users.push(socket.username);
     console.log("user array on server: " + users);
   });
-  socket.on("create", (roomName) => {
+
+  socket.on("create room", (roomName) => {
     socket.join(roomName);
-    rooms.push(roomName);
-    console.log(socket.rooms);
+    rooms.push({ name: roomName });
+    socket.emit("set rooms", rooms);
   });
+
+  socket.on("message", (message, room) => {
+    io.to(room).emit("post message", message);
+  });
+
+  socket.emit("set users", users);
 });
 
 server.listen(PORT, () =>

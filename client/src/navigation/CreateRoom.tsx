@@ -1,4 +1,5 @@
 import React, { ChangeEvent, CSSProperties, useContext, useState } from "react";
+import { useHistory } from "react-router";
 import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
 import { NetworkContext } from "../context/NetworkContext";
@@ -12,6 +13,7 @@ interface Props {
 function CreateRoom(props: Props) {
   const networkContext = useContext(NetworkContext);
   const [roomName, setRoomName] = useState("");
+  const history = useHistory();
 
   const handleCreateRoomInput = (e: ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
@@ -19,6 +21,7 @@ function CreateRoom(props: Props) {
 
   const handleCreateRoomClick = () => {
     networkContext.createRoom(roomName);
+    history.push(`/chat-room/${roomName}`);
   };
 
   return (

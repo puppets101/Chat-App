@@ -10,7 +10,7 @@ function Header(props: Props) {
   return (
     <div style={root}>
       <h2 style={title}>{props.title}</h2>
-      {props.loggedIn ? <h2>{props.loggedInText}</h2> : null}
+      {props.loggedIn ? <h3>{props.loggedInText}</h3> : null}
     </div>
   );
 }
@@ -22,6 +22,7 @@ const root: CSSProperties = {
   right: 0,
   display: "flex",
   justifyContent: "space-between",
+  alignItems: "flex-end",
   padding: "16px 64px",
   borderBottom: "2px solid black",
   backgroundColor: "#f3f3f3",

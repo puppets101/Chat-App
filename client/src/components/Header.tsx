@@ -16,10 +16,6 @@ function Header(props: Props) {
 }
 
 const root: CSSProperties = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "flex-end",

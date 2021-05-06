@@ -20,10 +20,18 @@ function ChatFeed() {
     setMessage({ ...message, text: e.target.value });
   };
 
+  const handleSendMessage = () => {};
+
   console.log(message);
 
   return (
     <div style={root}>
+      <div style={messageFeed}>
+        <div style={messageStyle}>
+          <p style={avatar}>Oscar</p>
+          <p style={textMessage}>Hej här är ett jättefint meddelande!</p>
+        </div>
+      </div>
       <div style={inputArea}>
         <label style={label} htmlFor="username">
           Message
@@ -35,28 +43,50 @@ function ChatFeed() {
           value={message.text}
           onChange={handleNewMessageInput}
         />
-        <button style={buttonStyle}>Send</button>
+        <button style={buttonStyle} onClick={handleSendMessage}>
+          Send
+        </button>
       </div>
     </div>
   );
 }
 
 const root: CSSProperties = {
+  background: "red",
   position: "relative",
+  display: "flex",
+  flexDirection: "column",
   width: "100%",
-  height: "100%",
 };
 
 const inputArea: CSSProperties = {
-  position: "absolute",
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "#f3f3f3",
-  bottom: "5%",
+  backgroundColor: "grey",
+  bottom: "0",
   width: "100%",
 };
 const label: CSSProperties = {
   fontSize: "0.8rem",
+};
+
+const messageFeed: CSSProperties = {};
+
+const messageStyle: CSSProperties = {
+  padding: ".5rem",
+  backgroundColor: "lightgrey",
+  display: "flex",
+  flexDirection: "column",
+};
+
+const avatar: CSSProperties = {
+  margin: "0",
+  fontWeight: "bold",
+};
+
+const textMessage: CSSProperties = {
+  padding: ".5rem",
+  margin: "0",
 };
 
 export default ChatFeed;

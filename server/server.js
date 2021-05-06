@@ -34,8 +34,8 @@ io.on("connection", (socket) => {
     socket.emit("set rooms", rooms);
   });
 
-  socket.on("message", (message, room) => {
-    io.to(room).emit("post message", message);
+  socket.on("message", (message) => {
+    io.to(socket.rooms).emit("post message", message);
   });
 
   socket.emit("set users", users);

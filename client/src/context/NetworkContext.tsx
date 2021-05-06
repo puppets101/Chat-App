@@ -74,6 +74,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
 
   const connectToRoom = () => {};
   const disconnectFromRoom = () => {};
+
   const sendMessage = () => {};
 
   const setUsername = (username: string) => {

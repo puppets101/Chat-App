@@ -14,6 +14,11 @@ export interface Room {
   name: string;
 }
 
+export interface Message {
+  user: User;
+  text: string;
+}
+
 interface NetworkValues {
   users: User[];
   rooms: Room[];
@@ -44,6 +49,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentRoom, setCurrentRoom] = useState<Room>();
+  const [messagesInRoom, setMessagesInRoom] = useState<string[]>([]);
 
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
@@ -60,6 +66,9 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     });
     socketRef.current.on("set users", (users: User[]) => {
       setUsers(users);
+    });
+    socketRef.current.on("post message", (message: string) => {
+      setMessagesInRoom([...messagesInRoom, message]);
     });
   }, []);
 

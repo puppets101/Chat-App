@@ -9,10 +9,8 @@ function Start() {
   const history = useHistory();
 
   const networkContext = useContext(NetworkContext);
-  console.log(networkContext.users);
 
   const [inputUsername, setInputUsername] = useState("");
-  console.log(inputUsername);
 
   const handleUsernameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInputUsername(e.target.value);

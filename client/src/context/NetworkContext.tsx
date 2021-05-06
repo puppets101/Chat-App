@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
+import SocketIO from "socket.io";
 import io from "socket.io-client";
 
 type Props = {
@@ -10,13 +11,14 @@ export interface User {
 }
 
 export interface Room {
-  members: User[];
   name: string;
 }
 
 interface NetworkValues {
   users: User[];
   rooms: Room[];
+  currentUser: User | undefined;
+  currentRoom: Room | undefined;
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
   sendMessage: () => void;
@@ -26,7 +28,9 @@ interface NetworkValues {
 
 export const NetworkContext = createContext<NetworkValues>({
   users: [],
+  currentUser: { username: "" },
   rooms: [],
+  currentRoom: { name: "" },
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
@@ -41,31 +45,50 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentRoom, setCurrentRoom] = useState<Room>();
 
-  const socket: SocketIOClient.Socket = io.connect("http://localhost:4000", {
-    transports: ["websocket"],
-  });
+  const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
-    socket.on("user", (user: []) => {
+    socketRef.current = io.connect("http://localhost:4000", {
+      transports: ["websocket"],
+    });
+
+    socketRef.current.on("user", (user: []) => {
       console.log("your userarray is: " + user);
+    });
+    socketRef.current.on("set rooms", (rooms: Room[]) => {
+      setRooms(rooms);
+    });
+    socketRef.current.on("set users", (users: User[]) => {
+      setUsers(users);
     });
   }, []);
 
   const connectToRoom = () => {};
   const disconnectFromRoom = () => {};
   const sendMessage = () => {};
+
   const setUsername = (username: string) => {
-    socket.emit("username", username);
+    if (socketRef.current) {
+      socketRef.current.emit("new user", username);
+    }
+
+    setCurrentUser({ username: username });
   };
+
   const createRoom = (roomName: string) => {
-    socket.emit("create", roomName);
+    if (socketRef.current) {
+      socketRef.current.emit("create room", roomName);
+    }
+    setCurrentRoom({ name: roomName });
   };
 
   return (
     <NetworkContext.Provider
       value={{
         users,
+        currentUser,
         rooms,
+        currentRoom,
         connectToRoom,
         disconnectFromRoom,
         sendMessage,

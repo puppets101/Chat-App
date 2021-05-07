@@ -40,7 +40,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
   console.log("Client was connected with ID:", socket.id);
 
   socket.on("new user", (username) => {
-    newUser(socket, username);
+    newUserData(socket, username);
   });
 
   socket.on("create room", (data: { roomName: string; username: string }) => {
@@ -68,47 +68,30 @@ io.on("connection", (socket: SocketIO.Socket) => {
       io.to(data.roomName).emit("set message", newMessage);
     });
 
-    // socket.on("leave room", () => {
-    //   socket.leave(data.roomName, () => {
-    //     console.log("we have left the room");
-    //     // updateMembers(socket, data.roomName);
-    //     updateRooms(socket, data.roomName);
-    //   });
-    // });
+    socket.on("leave room", () => {
+      removeMemberData(socket, data.roomName);
+      updateRoomsData(data.roomName);
+      socket.leave(data.roomName);
+    });
+
+    socket.on("disconnect", (reason) => {
+      // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
+      console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
+      removeUserData(socket);
+      removeMemberData(socket, data.roomName);
+      updateRoomsData(data.roomName);
+    });
   });
-
-  // socket.on("join room", (data) => {
-  //   socket.join(data.room, () => {
-  //     // ***** TODO: MAKE SURE TO UPDATE ROOMS ARRAY
-
-  //     socket.removeAllListeners("message");
-
-  //     // SEND MESSAGE TO ALL CLIENTS IN ROOM
-  //     io.to(data.room).emit("joined room", `${data.name} has joined the room!`);
-
-  //     socket.on("message", (message) => {
-  //       // ***** TODO: MAKE SURE TO UPDATE MESSAGES IN ROOM ARRAY
-  //       // updateMessagesInRoom(data.room, message);
-  //       io.to(data.room).emit("send message", message);
-  //     });
-
-  //     // BROADCAST ALL ROOMS TO ALL CLIENTS
-  //     io.emit("update rooms", updateRooms());
-  //   });
-
-  //   // ALWAYS UPDATES ROOMS WHEN CLIENT HAS CONNECTED
-  //   io.emit("update data", emitData());
-  // });
 
   // SEND SOME INFO AND UPDATE ROOMS WHEN CLIENT HAS DISCONNECTED
   socket.on("disconnect", (reason) => {
     // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
     console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
-    disconnectUser(socket);
+    removeUserData(socket);
   });
 });
 
-function newUser(socket: SocketIO.Socket, username: string) {
+function newUserData(socket: SocketIO.Socket, username: string) {
   const newUser: User = {
     username: username,
     id: socket.id,
@@ -117,7 +100,7 @@ function newUser(socket: SocketIO.Socket, username: string) {
   emitData();
 }
 
-function disconnectUser(socket: SocketIO.Socket) {
+function removeUserData(socket: SocketIO.Socket) {
   // FIND CLIENT IN USER ARRAY AND REMOVE
   const index = users.findIndex((user) => {
     user.id === socket.id;
@@ -140,48 +123,45 @@ function addNewRoom(socket: SocketIO.Socket, roomName: string) {
   emitData();
 }
 
-function addMember(socket: SocketIO.Socket, roomName: string) {}
+function addMemberData(socket: SocketIO.Socket, roomName: string) {
+  const newMember = getUser(socket.id);
+  const roomToPopulate = getRoom(roomName);
+  rooms[rooms.indexOf(roomToPopulate)].members.push(newMember);
+  console.log("rooms array: " + rooms);
+  emitData();
+}
 
-function updateRooms(socket: SocketIO.Socket, roomName: string) {
+function removeMemberData(socket: SocketIO.Socket, roomName: string) {
+  const memberToRemove = getUser(socket.id);
+  const roomToUpdate = getRoom(roomName);
+  const index = roomToUpdate.members.findIndex(
+    (member) => member.id === memberToRemove.id
+  );
+  rooms[rooms.indexOf(roomToUpdate)].members.splice(index, 1);
+  emitData();
+}
+
+function updateRoomsData(roomName: string) {
   const index = rooms.findIndex((room) => room.name === roomName);
   if (rooms[index].members.length < 1) {
-    rooms.slice(index, 1);
+    rooms.splice(index, 1);
   }
+  console.log(rooms);
+  emitData();
 }
 
 function getUser(id: string): User {
-  const user: User = users.find((user) => user.id === id);
-  return user;
+  return users.find((user) => user.id === id);
+}
+
+function getRoom(name: string): Room {
+  return rooms.find((room) => room.name === name);
 }
 
 function emitData() {
   // SEND NEW DATA TO CLIENT
   io.emit("update data", { rooms, users });
 }
-
-// io.on("connection", (socket) => {
-//   console.log("Client was connected", socket.id);
-
-//   socket.on("new user", (username) => {
-//     socket.username = username;
-//     users.push(socket.username);
-//     console.log("user array on server: " + users);
-//   });
-
-//   socket.on("create room", (roomName) => {
-//     socket.join(roomName);
-//     rooms.push({ name: roomName });
-//     socket.emit("set rooms", rooms);
-//   });
-
-//   socket.on("message", (message) => {
-//     io.to(socket.rooms).emit("post message", message);
-//   });
-
-//   socket.emit("set users", users);
-// });
-
-// io.on("connection", onConnection);
 
 server.listen(PORT, () =>
   console.log(`Server is running on port http://localhost:${PORT}`)

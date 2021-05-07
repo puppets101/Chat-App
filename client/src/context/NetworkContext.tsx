@@ -93,6 +93,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   console.log(rooms);
 
   const connectToRoom = () => {};
+
   const disconnectFromRoom = () => {
     if (socketRef.current) {
       socketRef.current.emit("leave room");

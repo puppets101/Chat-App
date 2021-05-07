@@ -9,8 +9,6 @@ interface Message {
 
 function ChatFeed() {
   const network = useContext(NetworkContext);
-
-  const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<Message>({
     user: network.currentUser,
     text: "",
@@ -20,15 +18,19 @@ function ChatFeed() {
     setMessage({ ...message, text: e.target.value });
   };
 
-  const handleSendMessage = () => {};
+  const handleSendMessage = () => {
+    network.sendMessage(message.text);
+  };
 
   return (
     <div style={root}>
       <div style={messageFeed}>
-        <div style={messageStyle}>
-          <p style={avatar}>Oscar</p>
-          <p style={textMessage}>Hej här är ett jättefint meddelande!</p>
-        </div>
+        {network.messagesInRoom.map(({ author, body }) => (
+          <div key={Math.random() * 100} style={messageStyle}>
+            <p style={avatar}>{author.username}</p>
+            <p style={textMessage}>{body}</p>
+          </div>
+        ))}
       </div>
       <div style={inputArea}>
         <label style={label} htmlFor="username">

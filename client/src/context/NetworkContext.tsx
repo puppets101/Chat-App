@@ -27,9 +27,10 @@ interface NetworkValues {
   rooms: Room[];
   currentUser: User;
   currentRoomName: string;
+  messagesInRoom: Message[];
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
-  sendMessage: () => void;
+  sendMessage: (message: string) => void;
   setUsername: (username: string) => void;
   createRoom: (roomName: string) => void;
 }
@@ -39,6 +40,7 @@ export const NetworkContext = createContext<NetworkValues>({
   currentUser: { username: "", id: "" },
   rooms: [],
   currentRoomName: "",
+  messagesInRoom: [],
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
@@ -55,7 +57,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentRoomName, setCurrentRoom] = useState<string>("");
-  const [messagesInRoom, setMessagesInRoom] = useState<string[]>([]);
+  const [messagesInRoom, setMessagesInRoom] = useState<Message[]>([]);
 
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
@@ -80,11 +82,11 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     socketRef.current.on("set users", (users: User[]) => {
       setUsers(users);
     });
-    socketRef.current.on("post message", (message: string) => {
-      setMessagesInRoom([...messagesInRoom, message]);
-    });
     socketRef.current.on("joined room", (message: string) => {
       console.log(message);
+    });
+    socketRef.current.on("set message", (message: Message) => {
+      setMessagesInRoom((prev) => [...prev, message]);
     });
   }, []);
 
@@ -98,7 +100,11 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
-  const sendMessage = () => {};
+  const sendMessage = (message: string) => {
+    if (socketRef.current) {
+      socketRef.current.emit("new message", message);
+    }
+  };
 
   const setUsername = (username: string) => {
     if (socketRef.current) {
@@ -122,6 +128,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         currentUser,
         rooms,
         currentRoomName,
+        messagesInRoom,
         connectToRoom,
         disconnectFromRoom,
         sendMessage,

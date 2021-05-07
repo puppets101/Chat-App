@@ -15,7 +15,7 @@ const io = require("socket.io")(server, {
 
 interface User {
   id: string;
-  name: string;
+  username: string;
 }
 
 interface Message {
@@ -57,6 +57,16 @@ io.on("connection", (socket: SocketIO.Socket) => {
       "joined room",
       `${data.username} has joined the room!`
     );
+
+    socket.on("new message", (message: string) => {
+      const newMessage = {
+        author: getUser(socket.id),
+        body: message,
+      };
+      console.log(newMessage.author);
+
+      io.to(data.roomName).emit("set message", newMessage);
+    });
 
     // socket.on("leave room", () => {
     //   socket.leave(data.roomName, () => {
@@ -100,7 +110,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
 function newUser(socket: SocketIO.Socket, username: string) {
   const newUser: User = {
-    name: username,
+    username: username,
     id: socket.id,
   };
   users.push(newUser);

@@ -25,7 +25,7 @@ function ChatRoom() {
       <Header
         title={`${room?.name}`}
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.name}`}
+        loggedInText={`Welcome ${network.currentUser?.username}`}
       />
       <ChatFeed />
       <button onClick={handleLeaveClick}>leave room</button>

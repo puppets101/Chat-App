@@ -8,7 +8,7 @@ type Props = {
 
 export interface User {
   id: string;
-  name: string;
+  username: string;
 }
 
 export interface Room {
@@ -25,7 +25,7 @@ export interface Message {
 interface NetworkValues {
   users: User[];
   rooms: Room[];
-  currentUser: User | undefined;
+  currentUser: User;
   currentRoomName: string;
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
@@ -36,7 +36,7 @@ interface NetworkValues {
 
 export const NetworkContext = createContext<NetworkValues>({
   users: [],
-  currentUser: { name: "", id: "" },
+  currentUser: { username: "", id: "" },
   rooms: [],
   currentRoomName: "",
   connectToRoom: () => {},
@@ -48,7 +48,10 @@ export const NetworkContext = createContext<NetworkValues>({
 
 const NetworkProvider: React.FC<Props> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User>();
+  const [currentUser, setCurrentUser] = useState<User>({
+    username: "",
+    id: "",
+  });
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentRoomName, setCurrentRoom] = useState<string>("");
@@ -100,18 +103,17 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   const setUsername = (username: string) => {
     if (socketRef.current) {
       socketRef.current.emit("new user", username);
-      setCurrentUser({ name: username, id: socketRef.current.id });
+      setCurrentUser({ username: username, id: socketRef.current.id });
     }
   };
 
   const createRoom = (roomName: string) => {
     if (socketRef.current) {
-      socketRef.current.emit("create room", { roomName, currentUser });
+      const username = currentUser.username;
+      socketRef.current.emit("create room", { roomName, username });
     }
     setCurrentRoom(roomName);
   };
-
-  console.log(users);
 
   return (
     <NetworkContext.Provider

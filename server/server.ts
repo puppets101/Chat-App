@@ -43,7 +43,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
     newUser(socket, username);
   });
 
-  socket.on("create room", (data: { roomName: string; user: User }) => {
+  socket.on("create room", (data: { roomName: string; username: string }) => {
     // Update rooms array with new room
     addNewRoom(socket, data.roomName);
 
@@ -53,9 +53,10 @@ io.on("connection", (socket: SocketIO.Socket) => {
     console.log("we have joined");
     socket.removeAllListeners("message");
 
-    socket
-      .to(data.roomName)
-      .emit("joined room", `${data.user} has joined the room!`);
+    io.to(data.roomName).emit(
+      "joined room",
+      `${data.username} has joined the room!`
+    );
 
     // socket.on("leave room", () => {
     //   socket.leave(data.roomName, () => {

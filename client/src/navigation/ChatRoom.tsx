@@ -12,7 +12,6 @@ interface Params {
 function ChatRoom() {
   const match = useRouteMatch<Params>();
   const network = useContext(NetworkContext);
-  console.log("Rooms: " + network.rooms);
   const room: Room | undefined = network.rooms.find(
     (room) => room.name === match.params.name
   );
@@ -22,7 +21,7 @@ function ChatRoom() {
       <Header
         title={`${room?.name}`}
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.username}`}
+        loggedInText={`Welcome ${network.currentUser?.name}`}
       />
       <ChatFeed />
     </div>

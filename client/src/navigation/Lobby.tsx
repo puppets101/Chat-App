@@ -7,20 +7,18 @@ import { NetworkContext } from "../context/NetworkContext";
 
 function Lobby() {
   const history = useHistory();
-  const networkContext = useContext(NetworkContext);
+  const network = useContext(NetworkContext);
 
   const handleCreateRoomClick = () => {
     history.push("/create-room");
   };
-
-  console.log(networkContext.currentUser);
 
   return (
     <div style={root}>
       <Header
         title="Lobby"
         loggedIn={true}
-        loggedInText={`Welcome ${networkContext.currentUser?.username}`}
+        loggedInText={`Welcome ${network.currentUser?.name}`}
       />
       <PageHeading title="Join a room" />
       <div style={roomWrapper}>

@@ -47,14 +47,23 @@ io.on("connection", (socket: SocketIO.Socket) => {
     // Update rooms array with new room
     addNewRoom(socket, data.roomName);
 
-    socket.join(data.roomName, () => {
-      console.log("we have joined");
-      socket.removeAllListeners("message");
+    socket.join(data.roomName);
+    console.log(socket.rooms);
 
-      socket
-        .to(data.roomName)
-        .emit("joined room", `${data.user.name} has joined the room!`);
-    });
+    console.log("we have joined");
+    socket.removeAllListeners("message");
+
+    socket
+      .to(data.roomName)
+      .emit("joined room", `${data.user} has joined the room!`);
+
+    // socket.on("leave room", () => {
+    //   socket.leave(data.roomName, () => {
+    //     console.log("we have left the room");
+    //     // updateMembers(socket, data.roomName);
+    //     updateRooms(socket, data.roomName);
+    //   });
+    // });
   });
 
   // socket.on("join room", (data) => {
@@ -118,6 +127,15 @@ function addNewRoom(socket: SocketIO.Socket, roomName: string) {
   };
   rooms.push(newRoom);
   emitData();
+}
+
+function addMember(socket: SocketIO.Socket, roomName: string) {}
+
+function updateRooms(socket: SocketIO.Socket, roomName: string) {
+  const index = rooms.findIndex((room) => room.name === roomName);
+  if (rooms[index].members.length < 1) {
+    rooms.slice(index, 1);
+  }
 }
 
 function getUser(id: string): User {

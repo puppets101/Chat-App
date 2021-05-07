@@ -22,8 +22,6 @@ function ChatFeed() {
 
   const handleSendMessage = () => {};
 
-  console.log(message);
-
   return (
     <div style={root}>
       <div style={messageFeed}>

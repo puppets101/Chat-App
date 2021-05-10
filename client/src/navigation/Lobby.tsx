@@ -13,6 +13,8 @@ function Lobby() {
     history.push("/create-room");
   };
 
+  const { rooms } = network;
+
   return (
     <div style={root}>
       <Header
@@ -22,12 +24,14 @@ function Lobby() {
       />
       <PageHeading title="Join a room" />
       <div style={roomWrapper}>
-        <Room name="Room 1" />
-        <Room name="Room 2" />
-        <Room name="Room 3" />
+        {rooms.length ? (
+          rooms.map(({ name }) => <Room name={name} />)
+        ) : (
+          <span>No rooms created yet.</span>
+        )}
       </div>
       <div>
-        <p>Or</p>
+        {rooms.length ? <p>Or</p> : <p>Go ahead and</p>}
         <button onClick={handleCreateRoomClick}>Create Room</button>
       </div>
     </div>

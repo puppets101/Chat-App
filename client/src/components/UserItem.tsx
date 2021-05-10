@@ -2,14 +2,12 @@ import React, { CSSProperties } from "react";
 
 interface Props {
   name: string;
-  currentRoom: string;
 }
 
 function UserItem(props: Props) {
   return (
     <div style={root}>
       <span>{props.name}</span>
-      <span style={currentRoom}>{props.currentRoom}</span>
     </div>
   );
 }

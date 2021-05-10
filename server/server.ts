@@ -38,19 +38,21 @@ app.use(express.static("client"));
 io.on("connection", (socket: SocketIO.Socket) => {
   // DISPLAY THAT CLIENT CONNECTED
   console.log("Client was connected with ID:", socket.id);
+  emitData();
 
   socket.on("new user", (username) => {
     newUserData(socket, username);
   });
 
-  socket.on("create room", (data: { roomName: string; username: string }) => {
-    // Update rooms array with new room
-    addNewRoom(socket, data.roomName);
+  socket.on("join room", (data: { roomName: string; username: string }) => {
+    if (rooms.findIndex((room) => room.name === data.roomName) === -1) {
+      // Update rooms array with new room
+      addNewRoom(socket, data.roomName);
+    }
 
+    addMemberData(socket, data.roomName);
     socket.join(data.roomName);
-    console.log(socket.rooms);
 
-    console.log("we have joined");
     socket.removeAllListeners("message");
 
     io.to(data.roomName).emit(
@@ -63,9 +65,11 @@ io.on("connection", (socket: SocketIO.Socket) => {
         author: getUser(socket.id),
         body: message,
       };
-      console.log(newMessage.author);
-
+      // Find room and add new message to messages array
+      const roomToPopulate = getRoom(data.roomName);
+      rooms[rooms.indexOf(roomToPopulate)].messages.push(newMessage);
       io.to(data.roomName).emit("set message", newMessage);
+      emitData();
     });
 
     socket.on("leave room", () => {
@@ -77,7 +81,6 @@ io.on("connection", (socket: SocketIO.Socket) => {
     socket.on("disconnect", (reason) => {
       // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
       console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
-      removeUserData(socket);
       removeMemberData(socket, data.roomName);
       updateRoomsData(data.roomName);
     });
@@ -97,6 +100,7 @@ function newUserData(socket: SocketIO.Socket, username: string) {
     id: socket.id,
   };
   users.push(newUser);
+  console.log(users);
   emitData();
 }
 
@@ -105,7 +109,9 @@ function removeUserData(socket: SocketIO.Socket) {
   const index = users.findIndex((user) => {
     user.id === socket.id;
   });
+  console.log(index);
   users.splice(index, 1);
+  console.log(users);
   emitData();
 }
 
@@ -116,7 +122,7 @@ function updateMessagesInRoom() {
 function addNewRoom(socket: SocketIO.Socket, roomName: string) {
   const newRoom: Room = {
     name: roomName,
-    members: [getUser(socket.id)],
+    members: [],
     messages: [],
   };
   rooms.push(newRoom);
@@ -127,13 +133,14 @@ function addMemberData(socket: SocketIO.Socket, roomName: string) {
   const newMember = getUser(socket.id);
   const roomToPopulate = getRoom(roomName);
   rooms[rooms.indexOf(roomToPopulate)].members.push(newMember);
-  console.log("rooms array: " + rooms);
   emitData();
 }
 
 function removeMemberData(socket: SocketIO.Socket, roomName: string) {
   const memberToRemove = getUser(socket.id);
   const roomToUpdate = getRoom(roomName);
+  // If the member was alone in the room - return
+  if (!memberToRemove) return;
   const index = roomToUpdate.members.findIndex(
     (member) => member.id === memberToRemove.id
   );
@@ -146,7 +153,6 @@ function updateRoomsData(roomName: string) {
   if (rooms[index].members.length < 1) {
     rooms.splice(index, 1);
   }
-  console.log(rooms);
   emitData();
 }
 

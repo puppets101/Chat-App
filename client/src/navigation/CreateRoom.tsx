@@ -20,7 +20,7 @@ function CreateRoom(props: Props) {
   };
 
   const handleCreateRoomClick = () => {
-    networkContext.createRoom(roomName);
+    networkContext.joinRoom(roomName);
     history.push(`/chat-room/${roomName}`);
   };
 

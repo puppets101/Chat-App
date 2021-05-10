@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useContext } from "react";
+import { NetworkContext } from "../context/NetworkContext";
 import RoomItem from "./RoomItem";
 import UserItem from "./UserItem";
 
@@ -7,14 +8,18 @@ type Props = {
 };
 
 const Shell: React.FC<Props> = ({ children }) => {
+  const network = useContext(NetworkContext);
+  const { rooms } = network;
   return (
     <div style={root}>
       <div style={sideContainer}>
         <h2 style={sideHeading}>Rooms</h2>
         <div>
-          <RoomItem name="Room 1" />
-          <RoomItem name="Room 2" />
-          <RoomItem name="Room 3" />
+          {rooms.length ? (
+            rooms.map(({ name, members }) => <RoomItem name={name} />)
+          ) : (
+            <span>No rooms to join</span>
+          )}
         </div>
       </div>
       <div style={centerContainer}>{children}</div>

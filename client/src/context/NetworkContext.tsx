@@ -14,7 +14,7 @@ export interface User {
 export interface Room {
   name: string;
   members: User[];
-  messages: string[];
+  messages: Message[];
 }
 
 export interface Message {
@@ -26,26 +26,26 @@ interface NetworkValues {
   users: User[];
   rooms: Room[];
   currentUser: User;
-  currentRoomName: string;
+  currentRoom: Room | undefined;
   messagesInRoom: Message[];
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
   sendMessage: (message: string) => void;
   setUsername: (username: string) => void;
-  createRoom: (roomName: string) => void;
+  joinRoom: (roomName: string) => void;
 }
 
 export const NetworkContext = createContext<NetworkValues>({
   users: [],
   currentUser: { username: "", id: "" },
   rooms: [],
-  currentRoomName: "",
+  currentRoom: { name: "", members: [], messages: [] },
   messagesInRoom: [],
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
   setUsername: () => {},
-  createRoom: () => {},
+  joinRoom: () => {},
 });
 
 const NetworkProvider: React.FC<Props> = ({ children }) => {
@@ -56,7 +56,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   });
 
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [currentRoomName, setCurrentRoom] = useState<string>("");
+  const [currentRoom, setCurrentRoom] = useState<Room | undefined>(undefined);
   const [messagesInRoom, setMessagesInRoom] = useState<Message[]>([]);
 
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
@@ -73,9 +73,6 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         setUsers(data.users);
       }
     );
-    socketRef.current.on("user", (user: []) => {
-      console.log("your userarray is: " + user);
-    });
     socketRef.current.on("set rooms", (rooms: Room[]) => {
       setRooms(rooms);
     });
@@ -90,14 +87,20 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     });
   }, []);
 
-  console.log(rooms);
+  useEffect(() => {
+    if (currentRoom) {
+      setMessagesInRoom(currentRoom.messages);
+    }
+  }, [currentRoom]);
+
+  console.log(messagesInRoom);
 
   const connectToRoom = () => {};
 
   const disconnectFromRoom = () => {
     if (socketRef.current) {
       socketRef.current.emit("leave room");
-      setCurrentRoom("");
+      setCurrentRoom(undefined);
     }
   };
 
@@ -114,12 +117,14 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
-  const createRoom = (roomName: string) => {
+  const joinRoom = (roomName: string) => {
     if (socketRef.current) {
       const username = currentUser.username;
-      socketRef.current.emit("create room", { roomName, username });
+      socketRef.current.emit("join room", { roomName, username });
     }
-    setCurrentRoom(roomName);
+    const room = rooms.find((room) => room.name === roomName);
+    setCurrentRoom(room);
+    console.log(room);
   };
 
   return (
@@ -128,13 +133,13 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         users,
         currentUser,
         rooms,
-        currentRoomName,
+        currentRoom,
         messagesInRoom,
         connectToRoom,
         disconnectFromRoom,
         sendMessage,
         setUsername,
-        createRoom,
+        joinRoom,
       }}
     >
       {children}

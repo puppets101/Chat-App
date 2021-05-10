@@ -20,6 +20,7 @@ function ChatFeed() {
 
   const handleSendMessage = () => {
     network.sendMessage(message.text);
+    setMessage({ user: network.currentUser, text: "" });
   };
 
   return (

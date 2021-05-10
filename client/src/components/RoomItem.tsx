@@ -1,14 +1,24 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useContext } from "react";
+import { useHistory } from "react-router";
+import { NetworkContext } from "../context/NetworkContext";
 
 interface Props {
   name: string;
 }
 
 function RoomItem(props: Props) {
+  const network = useContext(NetworkContext);
+  const history = useHistory();
+
+  const handleJoinRoomClick = (name: string) => {
+    network.joinRoom(name);
+    history.push(`/chat-room/${name}`);
+  };
+
   return (
     <div style={root}>
       <span>{props.name}</span>
-      <button>Join</button>
+      <button onClick={() => handleJoinRoomClick(props.name)}>Join</button>
     </div>
   );
 }

@@ -16,14 +16,19 @@ function ChatRoom() {
     (room) => room.name === match.params.name
   );
 
+  const handleLeaveClick = () => {
+    network.disconnectFromRoom();
+  };
+
   return (
     <div style={root}>
       <Header
         title={`${room?.name}`}
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.name}`}
+        loggedInText={`Welcome ${network.currentUser?.username}`}
       />
       <ChatFeed />
+      <button onClick={handleLeaveClick}>leave room</button>
     </div>
   );
 }

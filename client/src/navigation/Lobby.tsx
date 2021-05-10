@@ -18,7 +18,7 @@ function Lobby() {
       <Header
         title="Lobby"
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.name}`}
+        loggedInText={`Welcome ${network.currentUser?.username}`}
       />
       <PageHeading title="Join a room" />
       <div style={roomWrapper}>

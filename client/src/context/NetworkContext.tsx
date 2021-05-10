@@ -101,6 +101,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     if (socketRef.current) {
       socketRef.current.emit("leave room");
       setCurrentRoom(undefined);
+      setMessagesInRoom([]);
     }
   };
 
@@ -118,13 +119,15 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   };
 
   const joinRoom = (roomName: string) => {
+    if (currentRoom) {
+      disconnectFromRoom();
+    }
     if (socketRef.current) {
       const username = currentUser.username;
       socketRef.current.emit("join room", { roomName, username });
     }
     const room = rooms.find((room) => room.name === roomName);
     setCurrentRoom(room);
-    console.log(room);
   };
 
   return (

@@ -9,9 +9,8 @@ type Props = {
 
 const Shell: React.FC<Props> = ({ children }) => {
   const network = useContext(NetworkContext);
-  const { rooms, users } = network;
+  const { rooms, currentRoom } = network;
 
-  console.log(users);
   return (
     <div style={root}>
       <div style={sideContainer}>
@@ -26,13 +25,13 @@ const Shell: React.FC<Props> = ({ children }) => {
       </div>
       <div style={centerContainer}>{children}</div>
       <div style={sideContainer}>
-        <h2 style={sideHeading}>Users</h2>
+        <h2 style={sideHeading}>Users in this room</h2>
         <div>
-          {users.length ? (
-            users.map(({ username }) => <UserItem name={username} />)
-          ) : (
-            <span>No users registered yet.</span>
-          )}
+          {currentRoom?.members.length
+            ? currentRoom.members.map(({ username }) => (
+                <UserItem name={username} />
+              ))
+            : null}
         </div>
       </div>
     </div>

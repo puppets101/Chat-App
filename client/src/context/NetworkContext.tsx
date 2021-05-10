@@ -87,13 +87,12 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     });
   }, []);
 
+  console.log(rooms);
   useEffect(() => {
     if (currentRoom) {
       setMessagesInRoom(currentRoom.messages);
     }
   }, [currentRoom]);
-
-  console.log(messagesInRoom);
 
   const connectToRoom = () => {};
 
@@ -127,6 +126,8 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
       socketRef.current.emit("join room", { roomName, username });
     }
     const room = rooms.find((room) => room.name === roomName);
+    console.log("found room:" + room);
+    console.log("all rooms: " + rooms);
     setCurrentRoom(room);
   };
 

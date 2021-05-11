@@ -27,6 +27,9 @@ function ChatRoom() {
     return null;
   }
 
+  if (!network.passwordIsValidated) {
+    history.push("/lobby");
+  }
   return (
     <div style={root}>
       <Header

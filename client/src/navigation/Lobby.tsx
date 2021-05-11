@@ -2,7 +2,7 @@ import React, { CSSProperties, useContext } from "react";
 import { useHistory } from "react-router";
 import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
-import Room from "../components/Room";
+import RoomListItem from "../components/RoomListItem";
 import { NetworkContext } from "../context/NetworkContext";
 
 function Lobby() {
@@ -30,9 +30,7 @@ function Lobby() {
       <PageHeading title="Join a room" />
       <div style={roomWrapper}>
         {rooms.length ? (
-          rooms.map(({ name, members }) => (
-            <Room name={name} members={members} />
-          ))
+          rooms.map((room) => <RoomListItem room={room} />)
         ) : (
           <span>No rooms created yet.</span>
         )}

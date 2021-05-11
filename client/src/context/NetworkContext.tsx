@@ -15,6 +15,7 @@ export interface Room {
   name: string;
   members: User[];
   messages: Message[];
+  password?: string;
 }
 
 export interface Message {
@@ -30,11 +31,12 @@ interface NetworkValues {
   messagesInRoom: Message[];
   userIsTyping: boolean;
   whoIsTyping: string;
+  passwordIsValidated: boolean;
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
   sendMessage: (message: string) => void;
   setUsername: (username: string) => void;
-  joinRoom: (roomName: string) => void;
+  joinRoom: (roomName: string, password?: string) => void;
   handleUserIsTyping: (userIsTyping: boolean) => void;
 }
 
@@ -42,10 +44,11 @@ export const NetworkContext = createContext<NetworkValues>({
   users: [],
   currentUser: { username: "", id: "" },
   rooms: [],
-  currentRoom: { name: "", members: [], messages: [] },
+  currentRoom: { name: "", members: [], messages: [], password: "" },
   messagesInRoom: [],
   userIsTyping: false,
   whoIsTyping: "",
+  passwordIsValidated: true,
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
@@ -68,6 +71,8 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   const [userIsTyping, setUserIsTyping] = useState(false);
   const [whoIsTyping, setWhoIsTyping] = useState("");
 
+  const [passwordIsValidated, setPasswordIsValidated] = useState(true);
+
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
@@ -82,12 +87,6 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         setUsers(data.users);
       }
     );
-    socketRef.current.on("set rooms", (rooms: Room[]) => {
-      setRooms(rooms);
-    });
-    socketRef.current.on("set users", (users: User[]) => {
-      setUsers(users);
-    });
     socketRef.current.on("joined room", (message: string) => {
       console.log(message);
     });
@@ -100,7 +99,12 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     socketRef.current.on("set current room", (room: Room) => {
       setCurrentRoom(room);
     });
+    socketRef.current.on("password validated", (isValidated: boolean) => {
+      setPasswordIsValidated(isValidated);
+    });
   }, []);
+
+  console.log(passwordIsValidated);
 
   useEffect(() => {
     if (currentRoom) {
@@ -137,18 +141,22 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
-  const joinRoom = (roomName: string) => {
+  const joinRoom = (roomName: string, password?: string) => {
+    // Ta emot password om det finns
     if (currentRoom) {
       disconnectFromRoom();
     }
+    // Om password finns - skicka med det i emit join room
+
     if (socketRef.current) {
       const username = currentUser.username;
-      socketRef.current.emit("join room", { roomName, username });
+      if (password) {
+        socketRef.current.emit("join room", { roomName, username, password });
+      } else {
+        socketRef.current.emit("join room", { roomName, username });
+      }
+      // Om lösenord fanns, så har vi via servern uppdaterat ett state som displayar för användaren om lösenored stämmer eller ej
     }
-    const room = rooms.find((room) => room.name === roomName);
-    console.log("found room:" + room);
-    console.log("all rooms: " + rooms);
-    setCurrentRoom(room);
   };
 
   const handleUserIsTyping = (isTyping: boolean) => {
@@ -166,6 +174,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         messagesInRoom,
         userIsTyping,
         whoIsTyping,
+        passwordIsValidated,
         connectToRoom,
         disconnectFromRoom,
         sendMessage,

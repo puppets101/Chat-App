@@ -13,14 +13,23 @@ interface Props {
 function CreateRoom(props: Props) {
   const network = useContext(NetworkContext);
   const [roomName, setRoomName] = useState("");
+  const [password, setPassword] = useState("");
   const history = useHistory();
 
   const handleCreateRoomInput = (e: ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
   };
 
+  const handlePasswordInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   const handleCreateRoomClick = () => {
-    network.joinRoom(roomName);
+    if (password) {
+      network.joinRoom(roomName, password);
+    } else {
+      network.joinRoom(roomName);
+    }
     history.push(`/chat-room/${roomName}`);
   };
 
@@ -37,7 +46,7 @@ function CreateRoom(props: Props) {
         <label htmlFor="name">Room name</label>
         <input onChange={handleCreateRoomInput} type="text" name="name" />
         <label htmlFor="password">Password (optional)</label>
-        <input type="text" name="password" />
+        <input onChange={handlePasswordInput} type="text" name="password" />
         <button onClick={handleCreateRoomClick}>Create Room</button>
       </div>
     </div>

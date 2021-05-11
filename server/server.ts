@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://example.com",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -33,8 +33,6 @@ interface Room {
 const users: User[] = [];
 const rooms: Room[] = [];
 
-app.use(express.static("client"));
-
 io.on("connection", (socket: SocketIO.Socket) => {
   // DISPLAY THAT CLIENT CONNECTED
   console.log("Client was connected with ID:", socket.id);
@@ -45,15 +43,18 @@ io.on("connection", (socket: SocketIO.Socket) => {
   });
 
   socket.on("join room", (data: { roomName: string; username: string }) => {
+    socket.removeAllListeners("new message");
+    socket.removeAllListeners("leave room");
+    socket.removeAllListeners("disconnect");
+
+    socket.join(data.roomName);
+
     if (rooms.findIndex((room) => room.name === data.roomName) === -1) {
       // Update rooms array with new room
       addNewRoom(socket, data.roomName);
     }
-
     addMemberData(socket, data.roomName);
-    socket.join(data.roomName);
-
-    socket.removeAllListeners("message");
+    console.log(rooms);
 
     io.to(data.roomName).emit(
       "joined room",
@@ -83,15 +84,17 @@ io.on("connection", (socket: SocketIO.Socket) => {
       console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
       removeMemberData(socket, data.roomName);
       updateRoomsData(data.roomName);
+      removeUserData(socket);
     });
+    emitData();
   });
 
   // SEND SOME INFO AND UPDATE ROOMS WHEN CLIENT HAS DISCONNECTED
-  socket.on("disconnect", (reason) => {
-    // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
-    console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
-    removeUserData(socket);
-  });
+  // socket.on("disconnecting", (reason) => {
+  //   // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
+  //   console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
+
+  // });
 });
 
 function newUserData(socket: SocketIO.Socket, username: string) {
@@ -100,18 +103,13 @@ function newUserData(socket: SocketIO.Socket, username: string) {
     id: socket.id,
   };
   users.push(newUser);
-  console.log(users);
   emitData();
 }
 
 function removeUserData(socket: SocketIO.Socket) {
   // FIND CLIENT IN USER ARRAY AND REMOVE
-  const index = users.findIndex((user) => {
-    user.id === socket.id;
-  });
-  console.log(index);
+  const index = users.findIndex((user) => user.id === socket.id);
   users.splice(index, 1);
-  console.log(users);
   emitData();
 }
 
@@ -150,7 +148,7 @@ function removeMemberData(socket: SocketIO.Socket, roomName: string) {
 
 function updateRoomsData(roomName: string) {
   const index = rooms.findIndex((room) => room.name === roomName);
-  if (rooms[index].members.length < 1) {
+  if (!rooms[index].members.length) {
     rooms.splice(index, 1);
   }
   emitData();
@@ -166,6 +164,7 @@ function getRoom(name: string): Room {
 
 function emitData() {
   // SEND NEW DATA TO CLIENT
+  // todo: remove password!
   io.emit("update data", { rooms, users });
 }
 

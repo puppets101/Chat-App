@@ -1,5 +1,5 @@
 import React, { CSSProperties, useContext, useEffect, useState } from "react";
-import { useRouteMatch } from "react-router";
+import { useHistory, useRouteMatch } from "react-router";
 import PageHeading from "../components/PageHeading";
 import Header from "../components/Header";
 import { NetworkContext, Room } from "../context/NetworkContext";
@@ -11,6 +11,7 @@ interface Params {
 
 function ChatRoom() {
   const match = useRouteMatch<Params>();
+  const history = useHistory();
   const network = useContext(NetworkContext);
   const room: Room | undefined = network.rooms.find(
     (room) => room.name === match.params.name
@@ -18,6 +19,7 @@ function ChatRoom() {
 
   const handleLeaveClick = () => {
     network.disconnectFromRoom();
+    history.push("/lobby");
   };
 
   return (

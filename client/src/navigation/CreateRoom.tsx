@@ -11,7 +11,7 @@ interface Props {
 }
 
 function CreateRoom(props: Props) {
-  const networkContext = useContext(NetworkContext);
+  const network = useContext(NetworkContext);
   const [roomName, setRoomName] = useState("");
   const history = useHistory();
 
@@ -20,9 +20,14 @@ function CreateRoom(props: Props) {
   };
 
   const handleCreateRoomClick = () => {
-    networkContext.joinRoom(roomName);
+    network.joinRoom(roomName);
     history.push(`/chat-room/${roomName}`);
   };
+
+  if (network.currentUser.username === "") {
+    history.push("/");
+    return null;
+  }
 
   return (
     <div style={root}>

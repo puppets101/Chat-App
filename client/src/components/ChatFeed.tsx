@@ -1,4 +1,10 @@
-import React, { ChangeEvent, CSSProperties, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  CSSProperties,
+  KeyboardEvent,
+  useContext,
+  useState,
+} from "react";
 import { NetworkContext, User } from "../context/NetworkContext";
 import { buttonStyle, inputStyle } from "../styles";
 
@@ -18,9 +24,20 @@ function ChatFeed() {
     setMessage({ ...message, text: e.target.value });
   };
 
+  const handleUserIsTyping = (e: KeyboardEvent<HTMLInputElement>) => {
+    network.handleUserIsTyping(true);
+    if (message.text === "" || e.key === "ENTER") {
+      network.handleUserIsTyping(false);
+    }
+    if (e.key === "ENTER") {
+      handleSendMessage();
+    }
+  };
+
   const handleSendMessage = () => {
     network.sendMessage(message.text);
     setMessage({ user: network.currentUser, text: "" });
+    network.handleUserIsTyping(false);
   };
 
   return (
@@ -32,6 +49,7 @@ function ChatFeed() {
             <p style={textMessage}>{body}</p>
           </div>
         ))}
+        {network.whoIsTyping ? <span>{network.whoIsTyping}</span> : null}
       </div>
       <div style={inputArea}>
         <label style={label} htmlFor="username">
@@ -42,6 +60,7 @@ function ChatFeed() {
           type="text"
           name="message"
           value={message.text}
+          onKeyUp={handleUserIsTyping}
           onChange={handleNewMessageInput}
         />
         <button style={buttonStyle} onClick={handleSendMessage}>

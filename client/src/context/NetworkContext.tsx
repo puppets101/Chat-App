@@ -28,11 +28,14 @@ interface NetworkValues {
   currentUser: User;
   currentRoom: Room | undefined;
   messagesInRoom: Message[];
+  userIsTyping: boolean;
+  whoIsTyping: string;
   connectToRoom: () => void;
   disconnectFromRoom: () => void;
   sendMessage: (message: string) => void;
   setUsername: (username: string) => void;
   joinRoom: (roomName: string) => void;
+  handleUserIsTyping: (userIsTyping: boolean) => void;
 }
 
 export const NetworkContext = createContext<NetworkValues>({
@@ -41,11 +44,14 @@ export const NetworkContext = createContext<NetworkValues>({
   rooms: [],
   currentRoom: { name: "", members: [], messages: [] },
   messagesInRoom: [],
+  userIsTyping: false,
+  whoIsTyping: "",
   connectToRoom: () => {},
   disconnectFromRoom: () => {},
   sendMessage: () => {},
   setUsername: () => {},
   joinRoom: () => {},
+  handleUserIsTyping: () => {},
 });
 
 const NetworkProvider: React.FC<Props> = ({ children }) => {
@@ -58,6 +64,9 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [currentRoom, setCurrentRoom] = useState<Room | undefined>(undefined);
   const [messagesInRoom, setMessagesInRoom] = useState<Message[]>([]);
+
+  const [userIsTyping, setUserIsTyping] = useState(false);
+  const [whoIsTyping, setWhoIsTyping] = useState("");
 
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
@@ -82,17 +91,28 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     socketRef.current.on("joined room", (message: string) => {
       console.log(message);
     });
+    socketRef.current.on("broadcast typing", (body: string) => {
+      setWhoIsTyping(body);
+    });
     socketRef.current.on("set message", (message: Message) => {
       setMessagesInRoom((prev) => [...prev, message]);
     });
+    socketRef.current.on("set current room", (room: Room) => {
+      setCurrentRoom(room);
+    });
   }, []);
 
-  console.log(rooms);
   useEffect(() => {
     if (currentRoom) {
       setMessagesInRoom(currentRoom.messages);
     }
   }, [currentRoom]);
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.emit("user is typing", userIsTyping);
+    }
+  }, [userIsTyping]);
 
   const connectToRoom = () => {};
 
@@ -131,6 +151,11 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     setCurrentRoom(room);
   };
 
+  const handleUserIsTyping = (isTyping: boolean) => {
+    setUserIsTyping(isTyping);
+    console.log(isTyping);
+  };
+
   return (
     <NetworkContext.Provider
       value={{
@@ -139,11 +164,14 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         rooms,
         currentRoom,
         messagesInRoom,
+        userIsTyping,
+        whoIsTyping,
         connectToRoom,
         disconnectFromRoom,
         sendMessage,
         setUsername,
         joinRoom,
+        handleUserIsTyping,
       }}
     >
       {children}

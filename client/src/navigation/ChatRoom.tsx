@@ -22,6 +22,11 @@ function ChatRoom() {
     history.push("/lobby");
   };
 
+  if (network.currentUser.username === "") {
+    history.push("/");
+    return null;
+  }
+
   return (
     <div style={root}>
       <Header

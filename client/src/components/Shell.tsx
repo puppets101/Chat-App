@@ -17,7 +17,9 @@ const Shell: React.FC<Props> = ({ children }) => {
         <h2 style={sideHeading}>Rooms</h2>
         <div>
           {rooms.length ? (
-            rooms.map(({ name, members }) => <RoomItem name={name} />)
+            rooms.map(({ name, members }) => (
+              <RoomItem key={name} name={name} />
+            ))
           ) : (
             <span>No rooms to join</span>
           )}

@@ -43,6 +43,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
   });
 
   socket.on("join room", (data: { roomName: string; username: string }) => {
+    socket.removeAllListeners("user is typing");
     socket.removeAllListeners("new message");
     socket.removeAllListeners("leave room");
     socket.removeAllListeners("disconnect");
@@ -56,10 +57,22 @@ io.on("connection", (socket: SocketIO.Socket) => {
     addMemberData(socket, data.roomName);
     console.log(rooms);
 
+    socket.emit("set current room", getRoom(data.roomName));
+
     io.to(data.roomName).emit(
       "joined room",
       `${data.username} has joined the room!`
     );
+
+    socket.on("user is typing", (isTyping: boolean) => {
+      if (isTyping) {
+        socket
+          .to(data.roomName)
+          .emit("broadcast typing", `${data.username} is typing...`);
+      } else {
+        socket.to(data.roomName).emit("broadcast typing", "");
+      }
+    });
 
     socket.on("new message", (message: string) => {
       const newMessage = {

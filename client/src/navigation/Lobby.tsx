@@ -13,7 +13,12 @@ function Lobby() {
     history.push("/create-room");
   };
 
-  const { rooms } = network;
+  const { rooms, currentUser } = network;
+
+  if (currentUser.username === "") {
+    history.push("/");
+    return null;
+  }
 
   return (
     <div style={root}>
@@ -25,7 +30,9 @@ function Lobby() {
       <PageHeading title="Join a room" />
       <div style={roomWrapper}>
         {rooms.length ? (
-          rooms.map(({ name }) => <Room name={name} />)
+          rooms.map(({ name, members }) => (
+            <Room name={name} members={members} />
+          ))
         ) : (
           <span>No rooms created yet.</span>
         )}

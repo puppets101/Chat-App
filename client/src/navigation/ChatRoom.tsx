@@ -4,6 +4,7 @@ import PageHeading from "../components/PageHeading";
 import Header from "../components/Header";
 import { NetworkContext, Room } from "../context/NetworkContext";
 import ChatFeed from "../components/ChatFeed";
+import { buttonStyle } from "../styles";
 
 interface Params {
   name: string;
@@ -40,14 +41,28 @@ function ChatRoom() {
         loggedInText={`Welcome ${network.currentUser?.username}`}
       />
       <ChatFeed />
-      <button onClick={handleLeaveClick}>leave room</button>
+      <button
+        style={{ ...buttonStyle, ...leaveRoom }}
+        onClick={handleLeaveClick}
+      >
+        Leave Room
+      </button>
     </div>
   );
 }
 
 const root: CSSProperties = {
-  width: "100%",
   height: "100%",
+  display: "flex",
+  flexDirection: "column",
+};
+
+const leaveRoom: CSSProperties = {
+  backgroundColor: "#f73131",
+  color: "black",
+  borderRadius: 0,
+  margin: 0,
+  padding: "1rem",
 };
 
 export default ChatRoom;

@@ -1,8 +1,21 @@
-import React, { ChangeEvent, CSSProperties, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  CSSProperties,
+  KeyboardEvent,
+  useContext,
+  useState,
+} from "react";
 import { useHistory } from "react-router";
 import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
 import { NetworkContext } from "../context/NetworkContext";
+import {
+  buttonStyle,
+  flexColCenter,
+  inputStyle,
+  labelStyle,
+  marginL,
+} from "../styles";
 
 interface Props {
   title: string;
@@ -24,6 +37,12 @@ function CreateRoom(props: Props) {
     setPassword(e.target.value);
   };
 
+  const handleEnterClick = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleCreateRoomClick();
+    }
+  };
+
   const handleCreateRoomClick = () => {
     if (password) {
       network.joinRoom(roomName, password);
@@ -42,21 +61,38 @@ function CreateRoom(props: Props) {
     <div style={root}>
       <Header title="Lobby" />
       <PageHeading title="Create new room" />
-      <div style={input}>
-        <label htmlFor="name">Room name</label>
-        <input onChange={handleCreateRoomInput} type="text" name="name" />
-        <label htmlFor="password">Password (optional)</label>
-        <input onChange={handlePasswordInput} type="text" name="password" />
-        <button onClick={handleCreateRoomClick}>Create Room</button>
+      <div style={{ ...inputWrapper, ...flexColCenter, ...marginL }}>
+        <label style={labelStyle} htmlFor="name">
+          Room name
+        </label>
+        <input
+          onKeyUp={handleEnterClick}
+          style={inputStyle}
+          onChange={handleCreateRoomInput}
+          type="text"
+          name="name"
+        />
+        <label style={labelStyle} htmlFor="password">
+          Password (optional)
+        </label>
+        <input
+          style={inputStyle}
+          onChange={handlePasswordInput}
+          type="text"
+          name="password"
+          onKeyUp={handleEnterClick}
+        />
+        <button style={buttonStyle} onClick={handleCreateRoomClick}>
+          Create Room
+        </button>
       </div>
     </div>
   );
 }
 
-const root: CSSProperties = {};
-const input: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
+const root: CSSProperties = {
+  width: "100%",
 };
+const inputWrapper: CSSProperties = {};
 
 export default CreateRoom;

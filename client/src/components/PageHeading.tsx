@@ -1,4 +1,5 @@
 import React, { CSSProperties } from "react";
+import { marginL } from "../styles";
 
 interface Props {
   title: string;
@@ -6,15 +7,15 @@ interface Props {
 
 function PageHeading(props: Props) {
   return (
-    <div style={root}>
-      <h2>{props.title}</h2>
+    <div style={{ ...marginL }}>
+      <h2 style={heading}>{props.title}</h2>
     </div>
   );
 }
 
-const root: CSSProperties = {
-  display: "flex",
-  justifyContent: "center",
+const heading: CSSProperties = {
+  fontSize: "2rem",
+  textAlign: "center",
 };
 
 export default PageHeading;

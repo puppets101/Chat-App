@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
 import RoomListItem from "../components/RoomListItem";
 import { NetworkContext } from "../context/NetworkContext";
+import { buttonStyle, flexColCenter, marginL, marginM } from "../styles";
 
 function Lobby() {
   const history = useHistory();
@@ -27,7 +28,7 @@ function Lobby() {
         loggedIn={true}
         loggedInText={`Welcome ${network.currentUser?.username}`}
       />
-      <div style={container}>
+      <div style={{ ...flexColCenter, ...marginL }}>
         <PageHeading title="Join a room" />
         <div style={roomWrapper}>
           {rooms.length ? (
@@ -36,9 +37,11 @@ function Lobby() {
             <span>No rooms created yet.</span>
           )}
         </div>
-        <div>
+        <div style={{ ...flexColCenter, ...marginM }}>
           {rooms.length ? <p>Or</p> : <p>Go ahead and</p>}
-          <button onClick={handleCreateRoomClick}>Create Room</button>
+          <button style={buttonStyle} onClick={handleCreateRoomClick}>
+            Create Room
+          </button>
         </div>
       </div>
     </div>

@@ -56,9 +56,9 @@ const sideHeading: CSSProperties = {
 const centerContainer: CSSProperties = {
   height: "100%",
   position: "relative",
+  flex: 1,
   display: "flex",
   flexDirection: "column",
-  flex: 1,
 };
 
 const sideContainer: CSSProperties = {

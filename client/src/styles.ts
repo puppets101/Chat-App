@@ -22,3 +22,47 @@ export const inputStyle: CSSProperties = {
   backgroundColor: "#f5f5f5",
   marginBottom: "1rem",
 };
+
+export const labelStyle: CSSProperties = {
+  marginBottom: "5px",
+  fontWeight: "bold",
+  fontSize: "0.9rem",
+};
+
+export const flexColCenter: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+export const flexRowCenter: CSSProperties = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+export const flexRowStart: CSSProperties = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "flex-start",
+  justifyContent: "center",
+};
+
+export const flexColStart: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  justifyContent: "center",
+};
+
+export const marginL: CSSProperties = {
+  marginTop: "4rem",
+};
+export const marginM: CSSProperties = {
+  marginTop: "2rem",
+};
+export const marginS: CSSProperties = {
+  marginTop: "1rem",
+};

@@ -46,6 +46,17 @@ function ChatFeed() {
   const messageRef = useRef<HTMLParagraphElement>(null);
 
   const handleSendMessage = () => {
+    const gif = "/gif";
+    const chuckNorris = "/chuck";
+    if (message.text.includes(gif)) {
+      fetchGifApi();
+      return;
+    }
+    if (message.text.includes(chuckNorris)) {
+      fetchInspireApi();
+      return;
+    }
+
     network.sendMessage(message.text);
     setMessage({ user: network.currentUser, text: "" });
     network.handleUserIsTyping(false);
@@ -54,13 +65,41 @@ function ChatFeed() {
     }
   };
 
+  const fetchGifApi = async () => {
+    const api_key = "api_key=RFsRq95ZgqowJeKPEiUUmN6V8Bp8FcSF";
+    let searchQuery = message.text.substring(5);
+    let url = `https://api.giphy.com/v1/gifs/search?${api_key}&q=${searchQuery}&limit=1&offset=0&rating=g&lang=en`;
+
+    const response = await fetch(url);
+    const result = await response.json();
+
+    network.sendMessage(result.data[0].images.downsized.url);
+    setMessage({ user: network.currentUser, text: "" });
+    network.handleUserIsTyping(false);
+  };
+
+  const fetchInspireApi = async () => {
+    let url = "https://api.chucknorris.io/jokes/random";
+
+    const response = await fetch(url);
+    const result = await response.json();
+
+    network.sendMessage(result.value);
+    setMessage({ user: network.currentUser, text: "" });
+    network.handleUserIsTyping(false);
+  };
+
   return (
     <div style={root}>
       <div style={{ ...flexColStart, ...messageFeed }}>
         {network.messagesInRoom.map(({ author, body }) => (
           <div ref={messageRef} key={Math.random() * 100} style={messageStyle}>
             <p style={avatar}>{author.username}</p>
-            <p style={{ ...messageBody }}>{body}</p>
+            {body.includes("giphy") ? (
+              <img src={body} width="200px"></img>
+            ) : (
+              <p style={messageBody}>{body}</p>
+            )}
           </div>
         ))}
         {network.whoIsTyping ? <span>{network.whoIsTyping}</span> : null}
@@ -71,6 +110,7 @@ function ChatFeed() {
           style={{ ...inputStyle, flex: 1 }}
           type="text"
           name="message"
+          placeholder="Type /gif or /chuck"
           value={message.text}
           onKeyUp={handleUserIsTyping}
           onChange={handleNewMessageInput}

@@ -1,8 +1,6 @@
 import React, { CSSProperties, useContext } from "react";
 import { NetworkContext } from "../context/NetworkContext";
-import RoomItem from "./RoomItem";
 import RoomListItem from "./RoomListItem";
-import UserItem from "./UserItem";
 
 type Props = {
   children: React.ReactNode;
@@ -10,7 +8,7 @@ type Props = {
 
 const Shell: React.FC<Props> = ({ children }) => {
   const network = useContext(NetworkContext);
-  const { rooms, currentRoom } = network;
+  const { rooms } = network;
 
   return (
     <div style={root}>

@@ -2,32 +2,22 @@ import React, {
   ChangeEvent,
   CSSProperties,
   KeyboardEvent,
-  KeyboardEventHandler,
   useContext,
   useState,
 } from "react";
 import { useHistory } from "react-router";
-import { NetworkContext, Room, User } from "../context/NetworkContext";
+import { NetworkContext, Room } from "../context/NetworkContext";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
-import { faCheckSquare, faLock } from "@fortawesome/free-solid-svg-icons";
-
-import {
-  buttonStyle,
-  flexColStart,
-  flexRowCenter,
-  flexRowStart,
-  inputStyle,
-  labelStyle,
-  marginM,
-} from "../styles";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { buttonStyle, flexColStart, inputStyle, labelStyle } from "../styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Props {
   room: Room;
 }
 
-library.add(fab, faCheckSquare, faLock);
+library.add(fab, faLock);
 
 function RoomListItem(props: Props) {
   const network = useContext(NetworkContext);

@@ -58,13 +58,6 @@ const root: CSSProperties = {
   width: "100%",
 };
 
-const container: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
 const roomWrapper: CSSProperties = {
   width: "100%",
   maxWidth: "600px",

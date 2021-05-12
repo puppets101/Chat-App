@@ -3,7 +3,6 @@ import React, {
   CSSProperties,
   KeyboardEvent,
   useContext,
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -100,7 +99,12 @@ function ChatFeed() {
               <p style={nameStyle}>{author.username}</p>
             </div>
             {body.includes("giphy") ? (
-              <img style={messageBody} src={body} width="200px"></img>
+              <img
+                style={messageBody}
+                alt={body}
+                src={body}
+                width="200px"
+              ></img>
             ) : (
               <p style={messageBody}>{body}</p>
             )}

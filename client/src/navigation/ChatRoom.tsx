@@ -1,6 +1,6 @@
-import React, { CSSProperties, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, useContext } from "react";
 import { useHistory, useRouteMatch } from "react-router";
-import PageHeading from "../components/PageHeading";
+
 import Header from "../components/Header";
 import { NetworkContext, Room } from "../context/NetworkContext";
 import ChatFeed from "../components/ChatFeed";

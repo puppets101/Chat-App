@@ -18,7 +18,7 @@ function ChatRoom() {
   );
 
   const handleLeaveClick = () => {
-    network.disconnectFromRoom();
+    network.leaveRoom();
     history.push("/lobby");
   };
 
@@ -27,9 +27,11 @@ function ChatRoom() {
     return null;
   }
 
-  if (!network.passwordIsValidated) {
-    history.push("/lobby");
-  }
+  // FULLÖSNING!!
+  // if (!network.passwordIsValidated) {
+  //   history.push("/lobby");
+  // }
+
   return (
     <div style={root}>
       <Header

@@ -63,7 +63,8 @@ io.on("connection", (socket: SocketIO.Socket) => {
           return;
         }
       }
-      // We need to make sure to update the password validation state if no password on room
+
+      // If no password or password is correct - validation is OK
       socket.emit("password validated", true);
 
       socket.join(data.roomName);
@@ -71,7 +72,7 @@ io.on("connection", (socket: SocketIO.Socket) => {
       addMemberData(socket, data.roomName);
       console.log(rooms);
 
-      socket.emit("set current room", getRoom(data.roomName));
+      io.to(data.roomName).emit("set current room", getRoom(data.roomName));
 
       io.to(data.roomName).emit(
         "joined room",

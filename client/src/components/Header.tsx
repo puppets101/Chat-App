@@ -19,7 +19,7 @@ const root: CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "flex-end",
-  padding: "16px 64px",
+  padding: "1rem 2rem",
   borderBottom: "2px solid black",
   backgroundColor: "#f3f3f3",
 };

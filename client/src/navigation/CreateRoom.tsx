@@ -67,6 +67,7 @@ function CreateRoom(props: Props) {
         </label>
         <input
           onKeyUp={handleEnterClick}
+          autoFocus
           style={inputStyle}
           onChange={handleCreateRoomInput}
           type="text"

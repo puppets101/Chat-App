@@ -4,7 +4,13 @@ import Header from "../components/Header";
 import PageHeading from "../components/PageHeading";
 import RoomListItem from "../components/RoomListItem";
 import { NetworkContext } from "../context/NetworkContext";
-import { buttonStyle, flexColCenter, marginL, marginM } from "../styles";
+import {
+  buttonStyle,
+  flexColCenter,
+  flexColStart,
+  marginL,
+  marginM,
+} from "../styles";
 
 function Lobby() {
   const history = useHistory();
@@ -30,11 +36,11 @@ function Lobby() {
       />
       <div style={{ ...flexColCenter, ...marginL }}>
         <PageHeading title="Join a room" />
-        <div style={roomWrapper}>
+        <div style={{ ...roomWrapper, ...flexColStart }}>
           {rooms.length ? (
             rooms.map((room) => <RoomListItem room={room} />)
           ) : (
-            <span>No rooms created yet.</span>
+            <span style={{ textAlign: "center" }}>No rooms created yet.</span>
           )}
         </div>
         <div style={{ ...flexColCenter, ...marginM }}>
@@ -53,7 +59,6 @@ const root: CSSProperties = {
 };
 
 const container: CSSProperties = {
-  padding: "4rem",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -61,7 +66,11 @@ const container: CSSProperties = {
 };
 
 const roomWrapper: CSSProperties = {
+  width: "100%",
   maxWidth: "600px",
+  backgroundColor: "#dddddd",
+  borderRadius: "1rem",
+  padding: "2rem",
 };
 
 export default Lobby;

@@ -19,8 +19,8 @@ function ChatRoom() {
   );
 
   const handleLeaveClick = () => {
-    network.leaveRoom();
     history.push("/lobby");
+    network.leaveRoom();
   };
 
   if (network.currentUser.username === "") {
@@ -28,22 +28,17 @@ function ChatRoom() {
     return null;
   }
 
-  // FULLÖSNING!!
-  // if (!network.passwordIsValidated) {
-  //   history.push("/lobby");
-  // }
-
   return (
     <div style={root}>
       <Header
         title={`${room?.name}`}
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.username}`}
+        loggedInText={`Logged in as ${network.currentUser?.username}`}
       />
       <ChatFeed />
       <button
-        style={{ ...buttonStyle, ...leaveRoom }}
         onClick={handleLeaveClick}
+        style={{ ...buttonStyle, ...leaveRoom }}
       >
         Leave Room
       </button>

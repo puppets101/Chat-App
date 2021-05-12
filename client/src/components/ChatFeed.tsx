@@ -11,10 +11,9 @@ import { NetworkContext, User } from "../context/NetworkContext";
 import {
   buttonStyle,
   flexColStart,
+  flexRowCenter,
   flexRowStart,
   inputStyle,
-  labelStyle,
-  marginS,
 } from "../styles";
 
 interface Message {
@@ -94,9 +93,14 @@ function ChatFeed() {
       <div style={{ ...flexColStart, ...messageFeed }}>
         {network.messagesInRoom.map(({ author, body }) => (
           <div ref={messageRef} key={Math.random() * 100} style={messageStyle}>
-            <p style={avatar}>{author.username}</p>
+            <div style={flexRowCenter}>
+              <div style={{ ...avatar, ...flexRowCenter }}>
+                {author.username[0]}
+              </div>
+              <p style={nameStyle}>{author.username}</p>
+            </div>
             {body.includes("giphy") ? (
-              <img src={body} width="200px"></img>
+              <img style={messageBody} src={body} width="200px"></img>
             ) : (
               <p style={messageBody}>{body}</p>
             )}
@@ -110,7 +114,7 @@ function ChatFeed() {
           style={{ ...inputStyle, flex: 1 }}
           type="text"
           name="message"
-          placeholder="Type /gif or /chuck"
+          placeholder="Type /gif or /chuck for cool feature"
           value={message.text}
           onKeyUp={handleUserIsTyping}
           onChange={handleNewMessageInput}
@@ -136,6 +140,7 @@ const root: CSSProperties = {
 const messageFeed: CSSProperties = {
   overflowY: "auto",
   position: "absolute",
+  padding: "1rem",
   top: 0,
   left: 0,
   right: 0,
@@ -143,7 +148,6 @@ const messageFeed: CSSProperties = {
 
 const inputArea: CSSProperties = {
   position: "absolute",
-  backgroundColor: "grey",
   bottom: 0,
   left: 0,
   right: 0,
@@ -155,9 +159,21 @@ const messageStyle: CSSProperties = {
   padding: ".5rem",
   display: "flex",
   flexDirection: "column",
+  alignItems: "flex-start",
 };
 
 const avatar: CSSProperties = {
+  marginRight: "0.5rem",
+  width: "2.5rem",
+  height: "2.5rem",
+  borderRadius: "50%",
+  backgroundColor: "#4eb5f1",
+  fontWeight: "bold",
+  color: "white",
+  fontSize: "1.5rem",
+};
+
+const nameStyle: CSSProperties = {
   fontSize: "1.2rem",
   margin: "0",
   fontWeight: "bold",
@@ -167,7 +183,7 @@ const messageBody: CSSProperties = {
   padding: "0.6rem 0.8rem",
   margin: "0",
   backgroundColor: "#dddddd",
-  borderRadius: "0.5rem",
+  borderRadius: "1rem",
   marginLeft: "1rem",
   marginTop: "0.8rem",
 };

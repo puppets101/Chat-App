@@ -25,16 +25,6 @@ const Shell: React.FC<Props> = ({ children }) => {
         </div>
       </div>
       <div style={centerContainer}>{children}</div>
-      <div style={sideContainer}>
-        <h2 style={sideHeading}>Users in this room</h2>
-        <div>
-          {currentRoom?.members.length
-            ? currentRoom.members.map(({ username }) => (
-                <UserItem name={username} />
-              ))
-            : null}
-        </div>
-      </div>
     </div>
   );
 };
@@ -59,11 +49,12 @@ const centerContainer: CSSProperties = {
   flex: 1,
   display: "flex",
   flexDirection: "column",
+  borderRight: "2px solid black",
 };
 
 const sideContainer: CSSProperties = {
   backgroundColor: "#f3f3f3",
-  width: "200px",
+  width: "300px",
   padding: "1rem",
   borderColor: "black",
   borderWidth: "0 2px 0 2px",

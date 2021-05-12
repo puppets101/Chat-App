@@ -27,23 +27,35 @@ function Lobby() {
         loggedIn={true}
         loggedInText={`Welcome ${network.currentUser?.username}`}
       />
-      <PageHeading title="Join a room" />
-      <div style={roomWrapper}>
-        {rooms.length ? (
-          rooms.map((room) => <RoomListItem room={room} />)
-        ) : (
-          <span>No rooms created yet.</span>
-        )}
-      </div>
-      <div>
-        {rooms.length ? <p>Or</p> : <p>Go ahead and</p>}
-        <button onClick={handleCreateRoomClick}>Create Room</button>
+      <div style={container}>
+        <PageHeading title="Join a room" />
+        <div style={roomWrapper}>
+          {rooms.length ? (
+            rooms.map((room) => <RoomListItem room={room} />)
+          ) : (
+            <span>No rooms created yet.</span>
+          )}
+        </div>
+        <div>
+          {rooms.length ? <p>Or</p> : <p>Go ahead and</p>}
+          <button onClick={handleCreateRoomClick}>Create Room</button>
+        </div>
       </div>
     </div>
   );
 }
 
-const root: CSSProperties = {};
+const root: CSSProperties = {
+  width: "100%",
+};
+
+const container: CSSProperties = {
+  padding: "4rem",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
 const roomWrapper: CSSProperties = {
   maxWidth: "600px",

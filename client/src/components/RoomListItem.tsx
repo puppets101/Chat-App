@@ -17,13 +17,12 @@ function RoomListItem(props: Props) {
     } else {
       network.joinRoom(name);
     }
-    // Kolla på network.passwordIsCorrect innan push
-    if (network.passwordIsValidated) {
-      // TODO - pusha inte om validatePassword = false
-      history.push(`/chat-room/${name}`);
-    }
-    console.log(network.passwordIsValidated);
   };
+
+  // As soon as password validation is OK - push to room URL
+  if (network.passwordValidation === "correct") {
+    history.push(`/chat-room/${props.room.name}`);
+  }
 
   const handlePasswordInput = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -34,21 +33,25 @@ function RoomListItem(props: Props) {
       <div>
         <div style={flex}>
           <h4>{props.room.name}</h4>
-          {props.room.password ? (
+          <div style={flexRow}>
+            {props.room.password ? (
+              <div>
+                <label htmlFor="password">Password</label>
+                <input
+                  onChange={handlePasswordInput}
+                  type="password"
+                  name="password"
+                />
+              </div>
+            ) : null}
+            {network.passwordValidation === "wrong" ? (
+              <span>Wrong password</span>
+            ) : null}
             <div>
-              <label htmlFor="password">Password</label>
-              <input
-                onChange={handlePasswordInput}
-                type="password"
-                name="password"
-              />
+              <button onClick={() => handleJoinRoomClick(props.room.name)}>
+                Join
+              </button>
             </div>
-          ) : null}
-          {!network.passwordIsValidated ? <span>Wrong password</span> : null}
-          <div>
-            <button onClick={() => handleJoinRoomClick(props.room.name)}>
-              Go to Room
-            </button>
           </div>
         </div>
         <ul>
@@ -68,7 +71,12 @@ const root: CSSProperties = {
 };
 const flex: CSSProperties = {
   display: "flex",
-  alignItems: "center",
+  flexDirection: "column",
+};
+const flexRow: CSSProperties = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "flex-end",
 };
 
 export default RoomListItem;

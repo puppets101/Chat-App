@@ -3,10 +3,19 @@ import React, {
   CSSProperties,
   KeyboardEvent,
   useContext,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import { NetworkContext, User } from "../context/NetworkContext";
-import { buttonStyle, inputStyle } from "../styles";
+import {
+  buttonStyle,
+  flexColStart,
+  flexRowStart,
+  inputStyle,
+  labelStyle,
+  marginS,
+} from "../styles";
 
 interface Message {
   user: User | undefined;
@@ -26,13 +35,15 @@ function ChatFeed() {
 
   const handleUserIsTyping = (e: KeyboardEvent<HTMLInputElement>) => {
     network.handleUserIsTyping(true);
-    if (message.text === "" || e.key === "ENTER") {
+    if (message.text === "" || e.key === "Enter") {
       network.handleUserIsTyping(false);
     }
-    if (e.key === "ENTER") {
+    if (e.key === "Enter" && message.text.length) {
       handleSendMessage();
     }
   };
+
+  const messageRef = useRef<HTMLParagraphElement>(null);
 
   const handleSendMessage = () => {
     const gif = "/gif";
@@ -49,6 +60,9 @@ function ChatFeed() {
     network.sendMessage(message.text);
     setMessage({ user: network.currentUser, text: "" });
     network.handleUserIsTyping(false);
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView(false);
+    }
   };
 
   const fetchGifApi = async () => {
@@ -77,25 +91,23 @@ function ChatFeed() {
 
   return (
     <div style={root}>
-      <div style={messageFeed}>
+      <div style={{ ...flexColStart, ...messageFeed }}>
         {network.messagesInRoom.map(({ author, body }) => (
-          <div key={Math.random() * 100} style={messageStyle}>
+          <div ref={messageRef} key={Math.random() * 100} style={messageStyle}>
             <p style={avatar}>{author.username}</p>
             {body.includes("giphy") ? (
               <img src={body} width="200px"></img>
             ) : (
-              <p style={textMessage}>{body}</p>
+              <p style={messageBody}>{body}</p>
             )}
           </div>
         ))}
         {network.whoIsTyping ? <span>{network.whoIsTyping}</span> : null}
       </div>
-      <div style={inputArea}>
-        <label style={label} htmlFor="username">
-          Message
-        </label>
+      <div style={{ ...inputArea, ...flexRowStart }}>
         <input
-          style={inputStyle}
+          autoFocus
+          style={{ ...inputStyle, flex: 1 }}
           type="text"
           name="message"
           placeholder="Type /gif or /chuck"
@@ -112,41 +124,52 @@ function ChatFeed() {
 }
 
 const root: CSSProperties = {
-  background: "red",
   position: "relative",
   display: "flex",
   flexDirection: "column",
+  justifyContent: "baseline",
+  alignItems: "baseline",
   width: "100%",
+  flex: 1,
+};
+
+const messageFeed: CSSProperties = {
+  overflowY: "auto",
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
 };
 
 const inputArea: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
+  position: "absolute",
   backgroundColor: "grey",
-  bottom: "0",
-  width: "100%",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  padding: "2rem 0.5rem 1rem 0.5rem",
+  flex: 1,
 };
-const label: CSSProperties = {
-  fontSize: "0.8rem",
-};
-
-const messageFeed: CSSProperties = {};
 
 const messageStyle: CSSProperties = {
   padding: ".5rem",
-  backgroundColor: "lightgrey",
   display: "flex",
   flexDirection: "column",
 };
 
 const avatar: CSSProperties = {
+  fontSize: "1.2rem",
   margin: "0",
   fontWeight: "bold",
 };
 
-const textMessage: CSSProperties = {
-  padding: ".5rem",
+const messageBody: CSSProperties = {
+  padding: "0.6rem 0.8rem",
   margin: "0",
+  backgroundColor: "#dddddd",
+  borderRadius: "0.5rem",
+  marginLeft: "1rem",
+  marginTop: "0.8rem",
 };
 
 export default ChatFeed;

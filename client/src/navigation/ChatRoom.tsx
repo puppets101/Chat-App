@@ -19,8 +19,11 @@ function ChatRoom() {
   );
 
   const handleLeaveClick = () => {
-    history.push("/lobby");
-    network.leaveRoom();
+    if (room) {
+      network.updateRooms(room.name);
+      network.leaveRoom();
+      history.push("/lobby");
+    }
   };
 
   if (network.currentUser.username === "") {

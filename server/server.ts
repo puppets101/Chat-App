@@ -51,9 +51,10 @@ io.on("connection", (socket: SocketIO.Socket) => {
       socket.removeAllListeners("leave room");
       socket.removeAllListeners("disconnect");
 
-      // Check if room already exists - if not, add the room to the rooms array
+      // Check if room already exists - if not, add the room to the rooms array and emit new data
       if (rooms.findIndex((room) => room.name === data.roomName) === -1) {
         addNewRoom(socket, data.roomName, data.password);
+        emitData();
       }
 
       if (data.password) {
@@ -70,7 +71,6 @@ io.on("connection", (socket: SocketIO.Socket) => {
       socket.join(data.roomName);
 
       addMemberData(socket, data.roomName);
-      console.log(rooms);
 
       io.to(data.roomName).emit("set current room", getRoom(data.roomName));
 
@@ -102,28 +102,22 @@ io.on("connection", (socket: SocketIO.Socket) => {
       });
 
       socket.on("leave room", () => {
-        removeMemberData(socket, data.roomName);
-        updateRoomsData(data.roomName);
+        updateRoomsData(socket, data.roomName);
         socket.leave(data.roomName);
+        emitData();
       });
 
       socket.on("disconnect", (reason) => {
         // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
         console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
-        removeMemberData(socket, data.roomName);
-        updateRoomsData(data.roomName);
+        updateRoomsData(socket, data.roomName);
         removeUserData(socket);
+        emitData();
       });
       emitData();
     }
   );
-
-  // SEND SOME INFO AND UPDATE ROOMS WHEN CLIENT HAS DISCONNECTED
-  // socket.on("disconnecting", (reason) => {
-  //   // ***** TODO: MAKE SURE TO UPDATE ROOMS AND USERS ARRAY
-  //   console.log(`ID: ${socket.id} has disconnected. Reason: ${reason}`);
-
-  // });
+  emitData();
 });
 
 function newUserData(socket: SocketIO.Socket, username: string) {
@@ -132,14 +126,12 @@ function newUserData(socket: SocketIO.Socket, username: string) {
     id: socket.id,
   };
   users.push(newUser);
-  emitData();
 }
 
 function removeUserData(socket: SocketIO.Socket) {
   // FIND CLIENT IN USER ARRAY AND REMOVE
   const index = users.findIndex((user) => user.id === socket.id);
   users.splice(index, 1);
-  emitData();
 }
 
 function updateMessagesInRoom() {
@@ -158,14 +150,12 @@ function addNewRoom(
     password: password,
   };
   rooms.push(newRoom);
-  emitData();
 }
 
 function addMemberData(socket: SocketIO.Socket, roomName: string) {
   const newMember = getUser(socket.id);
   const roomToPopulate = getRoom(roomName);
   rooms[rooms.indexOf(roomToPopulate)].members.push(newMember);
-  emitData();
 }
 
 function removeMemberData(socket: SocketIO.Socket, roomName: string) {
@@ -177,15 +167,14 @@ function removeMemberData(socket: SocketIO.Socket, roomName: string) {
     (member) => member.id === memberToRemove.id
   );
   rooms[rooms.indexOf(roomToUpdate)].members.splice(index, 1);
-  emitData();
 }
 
-function updateRoomsData(roomName: string) {
+function updateRoomsData(socket: SocketIO.Socket, roomName: string) {
+  removeMemberData(socket, roomName);
   const index = rooms.findIndex((room) => room.name === roomName);
   if (!rooms[index].members.length) {
     rooms.splice(index, 1);
   }
-  emitData();
 }
 
 function getUser(id: string): User {

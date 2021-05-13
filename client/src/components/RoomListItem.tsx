@@ -1,15 +1,34 @@
-import React, { ChangeEvent, CSSProperties, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  CSSProperties,
+  KeyboardEvent,
+  useContext,
+  useState,
+} from "react";
 import { useHistory } from "react-router";
-import { NetworkContext, Room, User } from "../context/NetworkContext";
+import { NetworkContext, Room } from "../context/NetworkContext";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { buttonStyle, flexColStart, inputStyle, labelStyle } from "../styles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Props {
   room: Room;
 }
 
+library.add(fab, faLock);
+
 function RoomListItem(props: Props) {
   const network = useContext(NetworkContext);
   const history = useHistory();
   const [password, setPassword] = useState("");
+
+  const handleEnterClick = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleJoinRoomClick(props.room.name);
+    }
+  };
 
   const handleJoinRoomClick = (name: string) => {
     if (password) {
@@ -31,13 +50,30 @@ function RoomListItem(props: Props) {
   return (
     <div style={root}>
       <div>
-        <div style={flex}>
-          <h4>{props.room.name}</h4>
-          <div style={flexRow}>
+        <div style={flexColStart}>
+          <h3 style={{ marginRight: "2rem" }}>
+            {" "}
+            {props.room.name}{" "}
             {props.room.password ? (
-              <div>
-                <label htmlFor="password">Password</label>
+              <FontAwesomeIcon icon={["fas", "lock"]} />
+            ) : (
+              ""
+            )}
+          </h3>
+          <div style={{ ...flexColStart, marginBottom: "1rem" }}>
+            {props.room.members.map(({ username }) => (
+              <span>- {username}</span>
+            ))}
+          </div>
+          <div style={flexColStart}>
+            {props.room.password ? (
+              <div style={flexColStart}>
+                <label style={labelStyle} htmlFor="password">
+                  Password
+                </label>
                 <input
+                  onKeyUp={handleEnterClick}
+                  style={inputStyle}
                   onChange={handlePasswordInput}
                   type="password"
                   name="password"
@@ -45,20 +81,22 @@ function RoomListItem(props: Props) {
               </div>
             ) : null}
             {network.passwordValidation === "wrong" ? (
-              <span>Wrong password</span>
+              <span style={{ color: "red", marginBottom: "1rem" }}>
+                Wrong password!
+              </span>
             ) : null}
             <div>
-              <button onClick={() => handleJoinRoomClick(props.room.name)}>
+              <button
+                style={buttonStyle}
+                onClick={() => handleJoinRoomClick(props.room.name)}
+              >
                 Join
               </button>
             </div>
           </div>
         </div>
-        <ul>
-          {props.room.members.map(({ username }) => (
-            <li>{username}</li>
-          ))}
-        </ul>
+
+        <div style={divider}></div>
       </div>
     </div>
   );
@@ -69,14 +107,12 @@ const root: CSSProperties = {
   display: "flex",
   alignItems: "center",
 };
-const flex: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-};
-const flexRow: CSSProperties = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "flex-end",
+
+const divider: CSSProperties = {
+  height: "2px",
+  width: "100%",
+  backgroundColor: "#dddddd",
+  margin: "1rem 0",
 };
 
 export default RoomListItem;

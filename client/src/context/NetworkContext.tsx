@@ -1,5 +1,4 @@
 import { createContext, useEffect, useRef, useState } from "react";
-import SocketIO from "socket.io";
 import io from "socket.io-client";
 
 type Props = {
@@ -113,6 +112,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     // när rooms uppdateras måste vi kontrollera om current room har ändrats
     const updatedRoom = rooms.find((room) => room.name === currentRoom?.name);
     setCurrentRoom(updatedRoom);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms]);
 
   useEffect(() => {

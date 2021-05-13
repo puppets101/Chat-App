@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import Header from "./Header";
 import PageHeading from "./PageHeading";
-import { buttonStyle, inputStyle } from "../styles";
+import { buttonStyle, inputStyle, labelStyle } from "../styles";
 import { NetworkContext } from "../context/NetworkContext";
 import { useHistory } from "react-router";
 
@@ -40,10 +40,11 @@ function Start() {
       <div style={container}>
         <PageHeading title="Choose a username" />
         <div style={inputContainer}>
-          <label style={label} htmlFor="username">
+          <label style={labelStyle} htmlFor="username">
             Username
           </label>
           <input
+            autoFocus
             onKeyUp={handleEnterClick}
             style={inputStyle}
             type="text"

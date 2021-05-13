@@ -11,6 +11,7 @@ export const buttonStyle: CSSProperties = {
   fontSize: "1rem",
   border: "none",
   cursor: "pointer",
+  fontWeight: "bold",
 };
 
 export const inputStyle: CSSProperties = {
@@ -18,9 +19,9 @@ export const inputStyle: CSSProperties = {
   margin: "0 0.3em 0.3em 0",
   borderRadius: "2em",
   fontSize: "1rem",
-  border: "none",
   backgroundColor: "#f5f5f5",
-  marginBottom: "1rem",
+  marginBottom: "0.5rem",
+  border: "1px solid black",
 };
 
 export const labelStyle: CSSProperties = {

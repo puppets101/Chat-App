@@ -1,6 +1,6 @@
-import React, { CSSProperties, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, useContext } from "react";
 import { useHistory, useRouteMatch } from "react-router";
-import PageHeading from "../components/PageHeading";
+
 import Header from "../components/Header";
 import { NetworkContext, Room } from "../context/NetworkContext";
 import ChatFeed from "../components/ChatFeed";
@@ -19,8 +19,8 @@ function ChatRoom() {
   );
 
   const handleLeaveClick = () => {
-    network.leaveRoom();
     history.push("/lobby");
+    network.leaveRoom();
   };
 
   if (network.currentUser.username === "") {
@@ -28,22 +28,17 @@ function ChatRoom() {
     return null;
   }
 
-  // FULLÖSNING!!
-  // if (!network.passwordIsValidated) {
-  //   history.push("/lobby");
-  // }
-
   return (
     <div style={root}>
       <Header
         title={`${room?.name}`}
         loggedIn={true}
-        loggedInText={`Welcome ${network.currentUser?.username}`}
+        loggedInText={`Logged in as ${network.currentUser?.username}`}
       />
       <ChatFeed />
       <button
-        style={{ ...buttonStyle, ...leaveRoom }}
         onClick={handleLeaveClick}
+        style={{ ...buttonStyle, ...leaveRoom }}
       >
         Leave Room
       </button>

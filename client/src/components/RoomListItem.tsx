@@ -61,8 +61,8 @@ function RoomListItem(props: Props) {
             )}
           </h3>
           <div style={{ ...flexColStart, marginBottom: "1rem" }}>
-            {props.room.members.map(({ username }) => (
-              <span>- {username}</span>
+            {props.room.members.map(({ username }, index) => (
+              <span key={username + index}>- {username}</span>
             ))}
           </div>
           <div style={flexColStart}>

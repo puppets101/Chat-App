@@ -36,6 +36,7 @@ interface NetworkValues {
   setUsername: (username: string) => void;
   joinRoom: (roomName: string, password?: string) => void;
   handleUserIsTyping: (userIsTyping: boolean) => void;
+  updateRooms: (roomName: string) => void;
 }
 
 export const NetworkContext = createContext<NetworkValues>({
@@ -52,6 +53,7 @@ export const NetworkContext = createContext<NetworkValues>({
   setUsername: () => {},
   joinRoom: () => {},
   handleUserIsTyping: () => {},
+  updateRooms: () => {},
 });
 
 const NetworkProvider: React.FC<Props> = ({ children }) => {
@@ -106,8 +108,6 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     });
   }, []);
 
-  console.log("Passsword validated:" + passwordValidation);
-
   useEffect(() => {
     // när rooms uppdateras måste vi kontrollera om current room har ändrats
     const updatedRoom = rooms.find((room) => room.name === currentRoom?.name);
@@ -148,8 +148,6 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
-  console.log(currentRoom?.members);
-
   const joinRoom = (roomName: string, password?: string) => {
     if (currentRoom) {
       leaveRoom();
@@ -171,6 +169,34 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
     console.log(isTyping);
   };
 
+  const removeMember = (user: User, roomName: string) => {
+    // Find room to update
+    const roomToUpdate = rooms.find((room) => room.name === roomName);
+    console.log(roomToUpdate);
+    if (!roomToUpdate) return;
+    // Find user to remove
+    const userIndex = rooms[rooms.indexOf(roomToUpdate)].members.findIndex(
+      (u) => u.username === user.username
+    );
+    const roomsCopy = rooms;
+    roomsCopy[roomsCopy.indexOf(roomToUpdate)].members.splice(userIndex, 1);
+    console.log(roomsCopy);
+    setRooms(roomsCopy);
+  };
+
+  const updateRooms = (roomName: string) => {
+    removeMember(currentUser, roomName);
+    const roomToRemove = rooms.find((room) => room.name === roomName);
+    console.log(roomToRemove);
+    if (!roomToRemove) return;
+    if (roomToRemove.members.length < 1) {
+      const updatedRooms = rooms.filter(
+        (room) => room.name !== roomToRemove?.name
+      );
+      setRooms(updatedRooms);
+    }
+  };
+
   return (
     <NetworkContext.Provider
       value={{
@@ -187,6 +213,7 @@ const NetworkProvider: React.FC<Props> = ({ children }) => {
         setUsername,
         joinRoom,
         handleUserIsTyping,
+        updateRooms,
       }}
     >
       {children}

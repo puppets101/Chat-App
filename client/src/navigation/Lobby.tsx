@@ -37,11 +37,11 @@ function Lobby() {
       <div style={{ ...flexColCenter, ...marginL }}>
         <PageHeading title="Join a room" />
         <div style={{ ...roomWrapper, ...flexColStart }}>
-          {rooms.length ? (
+          {/* {rooms.length ? (
             rooms.map((room) => <RoomListItem room={room} />)
           ) : (
             <span style={{ textAlign: "center" }}>No rooms created yet.</span>
-          )}
+          )} */}
         </div>
         <div style={{ ...flexColCenter, ...marginM }}>
           {rooms.length ? <p>Or</p> : <p>Go ahead and</p>}
